@@ -10,7 +10,22 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
+        
+        $total = 0;
+        foreach($cart as $id => $details) {
+            $total += $details['price'] * $details['quantity'];
+        }
+
+        $discount = 0;
+        $discountAmount = 0;
+        if (session()->has('discount_token')) {
+            $token = session('discount_token');
+            $discountAmount = $total * $token['rate'];
+        }
+
+        $netTotal = $total - $discountAmount;
+
+        return view('cart.index', compact('cart', 'total', 'discountAmount', 'netTotal'));
     }
 
     public function add(Request $request, $id)

@@ -23,9 +23,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @php $total = 0 @endphp
                     @foreach(session('cart') as $id => $details)
-                        @php $total += $details['price'] * $details['quantity'] @endphp
                         <tr data-id="{{ $id }}">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
@@ -55,7 +53,22 @@
                 <tfoot class="bg-gray-50">
                     <tr>
                         <td colspan="5" class="px-6 py-4 text-right">
-                            <h3 class="text-xl font-bold text-gray-900">Total: ${{ number_format($total, 2) }}</h3>
+                            <div class="space-y-2 flex flex-col items-end">
+                                <div class="text-gray-600">Subtotal: ${{ number_format($total ?? 0, 2) }}</div>
+                                
+                                @if(isset($discountAmount) && $discountAmount > 0)
+                                    <div class="text-green-600 font-medium">
+                                        Loyalty Discount: -${{ number_format($discountAmount, 2) }}
+                                    </div>
+                                    <div class="text-2xl font-bold text-gray-900 border-t pt-2 mt-2">
+                                        Net Total: ${{ number_format($netTotal, 2) }}
+                                    </div>
+                                @else
+                                    <div class="text-xl font-bold text-gray-900">
+                                        Total: ${{ number_format($total ?? 0, 2) }}
+                                    </div>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 </tfoot>

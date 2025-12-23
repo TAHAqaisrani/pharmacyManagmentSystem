@@ -7,9 +7,21 @@
             <h2 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">Secure Payment Simulation</h2>
             
             <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div class="flex justify-between items-center text-lg">
-                    <span class="font-medium text-blue-900">Total Amount to Pay:</span>
-                    <span class="font-bold text-2xl text-blue-700">Rs. {{ number_format($order->total_amount, 2) }}</span>
+                <div class="space-y-1">
+                    @if($order->discount_amount > 0)
+                        <div class="flex justify-between items-center text-gray-600">
+                            <span>Subtotal:</span>
+                            <span>Rs. {{ number_format($order->total_amount + $order->discount_amount, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-green-600 font-medium border-b border-blue-200 pb-2">
+                            <span>Loyalty Discount:</span>
+                            <span>- Rs. {{ number_format($order->discount_amount, 2) }}</span>
+                        </div>
+                    @endif
+                    <div class="flex justify-between items-center text-lg mt-2 pt-2">
+                        <span class="font-medium text-blue-900">Total Amount to Pay:</span>
+                        <span class="font-bold text-2xl text-blue-700">Rs. {{ number_format($order->total_amount, 2) }}</span>
+                    </div>
                 </div>
                 <div class="mt-2 text-sm text-blue-600 text-right">
                     Order ID: <span class="font-mono">{{ $order->order_no }}</span>

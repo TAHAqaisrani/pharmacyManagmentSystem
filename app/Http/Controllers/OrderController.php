@@ -35,10 +35,19 @@ class OrderController extends Controller
                 $total += $details['price'] * $details['quantity'];
             }
 
+            // Apply Discount if available
+            $discountAmount = 0;
+            if (session()->has('discount_token')) {
+                $token = session('discount_token');
+                $discountAmount = $total * $token['rate'];
+            }
+            $netTotal = $total - $discountAmount;
+
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'order_no' => 'ORD-' . strtoupper(uniqid()),
-                'total_amount' => $total,
+                'total_amount' => $netTotal,
+                'discount_amount' => $discountAmount,
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
                 'shipping_address' => 'Default Address (Update Profile)' // Simplified
@@ -107,14 +116,17 @@ class OrderController extends Controller
             }
 
             // Generate Invoice
+            $discountAmount = $order->discount_amount ?? 0;
+            $subtotal = $order->total_amount + $discountAmount;
+
             $invoice = \App\Models\Invoice::create([
                 'invoice_no' => 'INV-' . strtoupper(uniqid()),
                 'invoice_date' => now(),
-                'discount_percent' => 0,
-                'discount_amount' => 0, // Discounts not yet implemented for web orders
-                'subtotal' => $order->total_amount,
+                'discount_percent' => ($subtotal > 0) ? ($discountAmount / $subtotal) * 100 : 0,
+                'discount_amount' => $discountAmount,
+                'subtotal' => $subtotal,
                 'total' => $order->total_amount,
-                'created_by' => Auth::guard('admin')->id() ?? 1, // Default to admin 1 if not strictly logged in as admin during approval (though middleware enforces it)
+                'created_by' => Auth::guard('admin')->id() ?? 1,
             ]);
 
             foreach ($order->items as $item) {

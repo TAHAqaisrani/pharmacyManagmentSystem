@@ -83,5 +83,25 @@ class BatchController extends Controller
         $expired = Batch::expired()->with('medicine')->get();
         return view('admin.batches.alerts', compact('expiringSoon', 'expired'));
     }
+
+    public function trash()
+    {
+        $batches = Batch::onlyTrashed()->with(['medicine', 'supplier'])->paginate(20);
+        return view('admin.batches.trash', compact('batches'));
+    }
+
+    public function restore($id)
+    {
+        $batch = Batch::withTrashed()->findOrFail($id);
+        $batch->restore();
+        return redirect()->route('admin.batches.trash')->with('success', 'Batch restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $batch = Batch::withTrashed()->findOrFail($id);
+        $batch->forceDelete();
+        return redirect()->route('admin.batches.trash')->with('success', 'Batch permanently deleted.');
+    }
 }
 

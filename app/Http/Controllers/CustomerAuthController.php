@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,28 @@ class CustomerAuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
+            // Check if regular customer or high value customer
+            $user = Auth::user();
+            $completedOrders = Order::where('user_id', $user->id)
+                                    ->where('status', 'completed')
+                                    ->count();
+            
+            $totalSpent = Order::where('user_id', $user->id)
+                               ->where('status', 'completed')
+                               ->sum('total_amount');
+
+            // Thresholds: > 5 orders OR > $1000 spent
+            if ($completedOrders > 5 || $totalSpent > 1000) {
+                session(['discount_token' => [
+                    'code' => 'LOYALTY10',
+                    'rate' => 0.10, // 10%
+                    'min_spend' => 0
+                ]]);
+                
+                return redirect()->intended('/')->with('success', 'Welcome back! You have been awarded a 10% Loyalty Discount on your next order!');
+            }
+
             return redirect()->intended('/');
         }
 

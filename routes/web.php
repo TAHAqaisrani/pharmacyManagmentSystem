@@ -47,6 +47,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
         Route::get('/', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/sales-chart-data', [\App\Http\Controllers\AdminController::class, 'salesChartData'])->name('sales-chart-data');
 
     Route::resource('medicines', \App\Http\Controllers\MedicineController::class)->names([
         'index' => 'medicines.index',
@@ -70,6 +71,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
     Route::get('batches/alerts', [\App\Http\Controllers\BatchController::class, 'alerts'])->name('batches.alerts');
+    Route::get('batches/trash', [\App\Http\Controllers\BatchController::class, 'trash'])->name('batches.trash');
+    Route::post('batches/{id}/restore', [\App\Http\Controllers\BatchController::class, 'restore'])->name('batches.restore');
+    Route::delete('batches/{id}/force-delete', [\App\Http\Controllers\BatchController::class, 'forceDelete'])->name('batches.force-delete');
     Route::resource('batches', \App\Http\Controllers\BatchController::class)->names([
         'index' => 'batches.index',
         'create' => 'batches.create',

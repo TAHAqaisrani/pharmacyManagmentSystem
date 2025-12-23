@@ -15,6 +15,10 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             Expiry Alerts
         </a>
+        <a href="{{ route('admin.batches.trash') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-gray-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Recycle Bin
+        </a>
     </div>
     <a href="{{ route('admin.batches.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
@@ -76,11 +80,18 @@
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{{ route('admin.batches.edit', $b) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
-                        <form action="{{ route('admin.batches.destroy', $b) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure?');">
+                        <a href="{{ route('admin.batches.edit', $b) }}" class="text-blue-600 hover:text-blue-900 mr-2">Edit</a>
+                        
+                        <form action="{{ route('admin.batches.destroy', $b) }}" method="POST" class="inline-block" onsubmit="return confirm('Move to recycle bin?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                            <button type="submit" class="text-amber-600 hover:text-amber-900 mr-2">Soft Delete</button>
+                        </form>
+
+                        <form action="{{ route('admin.batches.force-delete', $b->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Permanently delete? This cannot be undone.');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900">Perm Delete</button>
                         </form>
                     </td>
                 </tr>

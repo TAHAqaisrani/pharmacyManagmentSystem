@@ -34,6 +34,56 @@
 
     @auth
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        @if(isset($coupon) && $coupon)
+        <div class="mb-16 rounded-3xl bg-indigo-900 p-8 text-white shadow-2xl relative overflow-hidden text-center border-4 border-indigo-200" style="background-color: #312e81;">
+            <!-- Decorative circles -->
+            <div class="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-indigo-600 rounded-full opacity-30 blur-3xl" style="background-color: #4f46e5;"></div>
+            <div class="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-purple-600 rounded-full opacity-30 blur-3xl" style="background-color: #9333ea;"></div>
+            
+            <div class="relative z-10 max-w-3xl mx-auto">
+                <div class="inline-flex items-center gap-2 bg-indigo-800 text-yellow-300 px-4 py-1.5 rounded-full mb-6 font-semibold text-sm border border-indigo-700 shadow-sm" style="background-color: #3730a3; color: #fde047; border-color: #4338ca;">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                    VIP REWARD UNLOCKED
+                </div>
+                
+                <h2 class="text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight" style="color: #ffffff;">
+                    Congratulations! <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-amber-400" style="background: linear-gradient(to right, #fef08a, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">You're Our Top Buyer</span>
+                </h2>
+                
+                <p class="text-indigo-200 text-lg mb-8 leading-relaxed max-w-xl mx-auto" style="color: #c7d2fe;">
+                    You've shopped more than anyone else this month! Here is an exclusive discount code just for you.
+                </p>
+                
+                <div class="bg-white rounded-xl p-2 inline-flex items-center shadow-lg transform transition hover:scale-105 duration-200 max-w-full" style="background-color: #ffffff;">
+                    <div class="px-6 py-3 bg-gray-50 rounded-lg border border-gray-100 border-dashed border-2 mr-2" style="background-color: #f9fafb; border-color: #f3f4f6;">
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-widest text-left" style="color: #9ca3af;">Coupon Code</span>
+                        <span class="block text-3xl font-mono font-bold text-indigo-900 tracking-wider" style="color: #312e81;">{{ $coupon }}</span>
+                    </div>
+                    <button onclick="copyCoupon(this, '{{ $coupon }}')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-lg transition-colors shadow-md whitespace-nowrap" style="background-color: #4f46e5; color: #ffffff;">
+                        Copy Code
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function copyCoupon(btn, code) {
+                navigator.clipboard.writeText(code).then(function() {
+                    let originalText = btn.innerHTML;
+                    btn.innerHTML = 'Copied!';
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                    btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    }, 2000);
+                });
+            }
+        </script>
+        @endif
+
         <div class="text-center mb-12">
             <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">Available Medicines</h2>
             <p class="mt-4 text-lg text-gray-500">Browse our selection of high-quality healthcare products.</p>

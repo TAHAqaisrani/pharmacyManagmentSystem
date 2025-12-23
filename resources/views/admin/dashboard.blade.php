@@ -51,8 +51,18 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <!-- Chart -->
     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <h3 class="font-bold text-gray-800 mb-6">Sales Overview (Last 7 Days)</h3>
-        <canvas id="salesChart" height="120"></canvas>
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="font-bold text-gray-800">Sales Overview (Last 7 Days)</h3>
+            <select id="medicineFilter" class="text-sm border-gray-200 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                <option value="">All Medicines</option>
+                @foreach($medicines as $medicine)
+                    <option value="{{ $medicine->id }}">{{ $medicine->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="relative h-64">
+            <canvas id="salesChart"></canvas>
+        </div>
     </div>
 
     <!-- Quick Actions -->
@@ -100,42 +110,63 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Prepare Chart Data
         const salesData = {!! json_encode($salesData) !!};
-        // Generate last 7 days labels to ensure gaps are filled (simplified for now to just show data points)
-        const labels = Object.keys(salesData);
-        const data = Object.values(salesData);
-
         const ctx = document.getElementById('salesChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue ($)',
-                        data: data,
-                        borderColor: 'rgb(37, 99, 235)', // Blue-600
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+        let chartInstance = null;
+
+        function initChart(labels, data) {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            if (ctx) {
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: data,
+                            borderColor: 'rgb(37, 99, 235)', // Blue-600
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
                     },
-                    plugins: {
-                        legend: {
-                            display: false
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
+
+        // Initialize with default data
+        initChart(Object.keys(salesData), Object.values(salesData));
+
+        // Handle Filter Change
+        document.getElementById('medicineFilter').addEventListener('change', function() {
+            const medicineId = this.value;
+            
+            // Show loading state if needed (optional)
+            // fetch data
+            fetch(`{{ route('admin.sales-chart-data') }}?medicine_id=${medicineId}`)
+                .then(response => response.json())
+                .then(data => {
+                    initChart(Object.keys(data), Object.values(data));
+                })
+                .catch(error => console.error('Error fetching chart data:', error));
+        });
     });
 </script>
 @endsection
